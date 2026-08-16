@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>Coherence: Shadow to Stillness</title>
+
+<!-- Home Screen / PWA setup (iOS + Android) -->
+<link rel="manifest" href="manifest.webmanifest" />
+<meta name="theme-color" content="#0A0E1A" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="Coherence" />
+<link rel="apple-touch-icon" href="icons/icon-180.png" />
+<link rel="apple-touch-icon" sizes="152x152" href="icons/icon-152.png" />
+<link rel="apple-touch-icon" sizes="167x167" href="icons/icon-167.png" />
+<link rel="apple-touch-icon" sizes="180x180" href="icons/icon-180.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="icons/icon-32.png" />
+<link rel="icon" type="image/png" sizes="16x16" href="icons/icon-16.png" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="app">
+
+    <!-- TOP: timer + session control -->
+    <div class="top-bar">
+      <div class="timer-select" id="timerSelect">
+        <button data-minutes="5" class="active">5 MIN</button>
+        <button data-minutes="10">10 MIN</button>
+        <button data-minutes="20">20 MIN</button>
+      </div>
+      <button class="session-btn" id="sessionBtn">Start Session</button>
+      <div class="countdown" id="countdown">05:00</div>
+    </div>
+
+    <!-- CENTER: breathing visualizer -->
+    <div class="sphere-stage">
+      <div class="sphere-wrap">
+        <div class="sphere" id="sphere"></div>
+      </div>
+      <div class="phase-label" id="phaseLabel">&nbsp;</div>
+      <div class="session-end-msg" id="sessionEndMsg"></div>
+    </div>
+
+    <!-- BOTTOM: adaptive instructions + audio mixers -->
+    <div class="bottom-panel">
+      <div class="prompt-box">
+        <span class="step-title" id="stepTitle">Ready</span>
+        <span class="step-text" id="stepText">Select a duration and press Start Session. Headphones are recommended for the binaural layer.</span>
+      </div>
+
+      <div class="mixers">
+        <div class="mixer-row">
+          <label><span>Master Volume</span><span id="masterVolVal">60%</span></label>
+          <input type="range" id="masterVol" min="0" max="100" value="60" />
+        </div>
+        <div class="mixer-row">
+          <label><span>Solfeggio Bed</span><span>Binaural Beat</span></label>
+          <input type="range" id="mixSlider" min="0" max="100" value="50" />
+        </div>
+        <div class="mixer-row">
+          <label><span>Solfeggio Frequency</span></label>
+          <div class="freq-toggle" id="freqToggle">
+            <button data-freq="432" class="active">432 Hz — Heart</button>
+            <button data-freq="528">528 Hz — Repair</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="hint">136.1 Hz carrier · 4.5 Hz theta offset · use headphones for true binaural separation</footer>
+  </div>
+
+  <!-- Silent unlock clip: playing this on the Start Session tap nudges iOS
+       Safari into "playback" audio session category, which helps raw Web
+       Audio API (oscillator) output stay audible/reliable on iPhone. -->
+  <audio id="audioUnlock" playsinline preload="auto"
+    src="data:audio/wav;base64,UklGRkQDAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YSADAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=="></audio>
+
+  <script src="js/audioEngine.js"></script>
+  <script src="js/breathVisualizer.js"></script>
+  <script src="js/instructionEngine.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js').catch(() => {
+          /* offline caching is a nice-to-have, not required for the app to work */
+        });
+      });
+    }
+  </script>
+</body>
+</html>
